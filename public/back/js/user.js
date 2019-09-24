@@ -9,6 +9,10 @@ $(function() {
   // 一页多少条
   var pageSize = 5;
 
+  var currentId;
+
+  var isDelete;
+
   // 1. 一进入页面, 进行渲染
   render();
 
@@ -54,9 +58,45 @@ $(function() {
   }
 
 
-  // 2. 通过事件委托给 按钮注册点击事件
+  // 2. 点击启用禁用按钮 通过事件委托给 按钮注册点击事件
+    $('tbody').on('click' ,'.btn' ,function () {
+      //显示模态框
+      $('#userModal').modal('show');
+      // 获取用户id jquery中提供了自定义 属性方法 data()
+      currentId = $(this).parent().data('id');
 
+      // console.log(id);
+      // 如果时禁用按钮 说明需要将用户设成禁用状态 传0
+        isDelete = $(this).hasClass('btn-danger') ? 0 : 1;
 
+    })
+  // 点击模态框进行确认 修改用户对应状态
+  $('#submitBtn').click(function () {
+
+    console.log("用户的id是:"+currentId);
+    console.log("用户状态改变:"+isDelete);
+      // 发送ajax请求 进行确认改变状态
+    $.ajax({
+        type: 'post',
+        url: "/user/updateUser",
+      data: {
+      id :currentId,
+        isDelete:isDelete
+      },
+      dataType:"json",
+      success:function (info) {
+          console.log(info);
+          if (info.success){
+            // 1.关闭模态框
+            $('#userModal').modal('hide');
+            // 2.页面重新渲染
+            render();
+          }
+
+      }
+    })
+
+  })
 
 
 })
