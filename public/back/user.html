@@ -85,7 +85,11 @@
         </tbody>
       </table>
 
-
+      <!--3.X的bootstap版本 dom结构必须使用ul-->
+        <!--准备容器-->
+       <div class="text-right">
+         <ul id="paginator"></ul>
+       </div>
     </div>
 
   </div>
@@ -131,7 +135,7 @@
 <script type="text/html" id="tpl">
 {{each rows v i}}
   <tr>
-    <td>{{ i + 1}}</td>
+    <td>{{ i + 1 + (page -1) * size }}</td>
     <td>{{v.username}}</td>
     <td>{{v.mobile}}</td>
     <!--isDelete标记用户状态 0 表示禁用状态 1表示启用-->
@@ -156,5 +160,6 @@
 <script type="text/javascript" src="./lib/artTemplate/template-web.js"></script>
 <script src="js/common.js"></script>
 <script type="text/javascript" src="./js/user.js"></script>
+<script type="text/javascript" src="./lib/bootstrap-paginator/bootstrap-paginator.min.js"></script>
 </body>
 </html>
