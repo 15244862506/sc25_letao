@@ -78,6 +78,8 @@ $(function() {
       var id = $(this).data("id");
       //设置给input
       $('[name="categoryId"]').val(id);
+      //将隐藏域设置成校验状态设置成校验成功状态updateStatus
+      $('#form').data('bootstrapValidator').updateStatus('categoryId',"VALID")
 
     })
 
@@ -95,7 +97,84 @@ $(function() {
         $('#imgBox img').attr( "src",imgUrl)
         //将图片地址 设置给input
         $('[name = "brandLogo"]').val( imgUrl )
+        // 手动重置隐藏域校验状态
+        $('#form').data('bootstrapValidator').updateStatus('brandLogo','VALID');
+
       }
 
     })
+
+  // 5.实现表单校验初始化
+  $("#form").bootstrapValidator({
+    // 将默认的排除项, 重置掉 (默认会对 :hidden, :disabled等进行排除)
+    excluded: [],
+
+    // 配置校验图标
+    feedbackIcons: {
+      valid: 'glyphicon glyphicon-ok',    // 校验成功
+      invalid: 'glyphicon glyphicon-remove',  // 校验失败
+      validating: 'glyphicon glyphicon-refresh' // 校验中
+    },
+
+    // 配置字段
+    fields:{
+      // categoryId: 分类id
+      //   brandName 二级分类名称
+      //   branchLogo图片地址
+      categoryId: {
+        validators:{
+          notEmpty:{
+              message:"请选择一级分类"
+          }
+        }
+      },
+      brandName: {
+        validators:{
+          notEmpty:{
+            message:"请选择二级分类"
+          }
+        }
+      },
+      brandLogo: {
+        validators:{
+          notEmpty:{
+            message:"请选择图片地址"
+          }
+        }
+      },
+    }
+  });
+
+
+  // 6.注册表单校验成功事件，阻止默认提交行为，通过ajax提交
+  $('#form').on("success.form.bv",function (e) {
+    // 阻止默认提交
+    e.preventDefault();
+    // 通过ajax提交
+    $.ajax({
+      type:"post",
+      url:"/category/addSecondCategory",
+      data:$("#form").serialize(),
+      dataType:"json",
+      success:function (info) {
+        console.log(info);
+        if (info.success){
+          //关闭模态框
+          $('#addModal').modal('hide');
+          //重新渲染页面
+          currentPage =1;
+          render();
+          //重置模态框表单 ,不仅校验状态要重止 文本内容也要重置
+          $('#form').data("bootstrapValidator").resetForm(true);
+          // 手动重置文本内容  和图片路径
+          $(".dropdownText").text("请选择一级分类");
+          $("#imgBox img").attr("src" ,"images/none.png");
+
+
+        }
+      }
+    })
+
+  })
+
 });
