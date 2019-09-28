@@ -45,19 +45,19 @@
       <div class="mui-scroll-wrapper">
         <div class="mui-scroll">
           <ul>
-            <li><a href="#" class="current">运动馆</a></li>
-            <li><a href="#">运动馆</a></li>
-            <li><a href="#">运动馆</a></li>
-            <li><a href="#">运动馆</a></li>
-            <li><a href="#">运动馆</a></li>
-            <li><a href="#">运动馆</a></li>
-            <li><a href="#">运动馆</a></li>
-            <li><a href="#">运动馆</a></li>
-            <li><a href="#">运动馆</a></li>
-            <li><a href="#">运动馆</a></li>
-            <li><a href="#">运动馆</a></li>
-            <li><a href="#">运动馆</a></li>
-            <li><a href="#">运动馆</a></li>
+            <!--<li><a href="#" class="current">运动馆</a></li>-->
+            <!--<li><a href="#">运动馆</a></li>-->
+            <!--<li><a href="#">运动馆</a></li>-->
+            <!--<li><a href="#">运动馆</a></li>-->
+            <!--<li><a href="#">运动馆</a></li>-->
+            <!--<li><a href="#">运动馆</a></li>-->
+            <!--<li><a href="#">运动馆</a></li>-->
+            <!--<li><a href="#">运动馆</a></li>-->
+            <!--<li><a href="#">运动馆</a></li>-->
+            <!--<li><a href="#">运动馆</a></li>-->
+            <!--<li><a href="#">运动馆</a></li>-->
+            <!--<li><a href="#">运动馆</a></li>-->
+            <!--<li><a href="#">运动馆</a></li>-->
           </ul>
         </div>
       </div>
@@ -67,60 +67,14 @@
       <div class="mui-scroll-wrapper">
         <div class="mui-scroll">
           <ul>
-            <li>
-              <a href="#">
-                <img src="./images/brand1.png" alt="">
-                <p>耐克</p>
-              </a>
-            </li>
+            <!--<li>-->
+              <!--<a href="#">-->
+                <!--<img src="./images/brand1.png" alt="">-->
+                <!--<p>耐克</p>-->
+              <!--</a>-->
+            <!--</li>-->
 
 
-            <li>
-              <a href="#">
-                <img src="./images/brand2.png" alt="">
-                <p>阿迪</p>
-              </a>
-            </li>
-
-
-            <li>
-              <a href="#">
-                <img src="./images/brand3.png" alt="">
-                <p>新百伦</p>
-              </a>
-            </li>
-
-
-            <li>
-              <a href="#">
-                <img src="./images/brand4.png" alt="">
-                <p>哥伦比亚</p>
-              </a>
-            </li>
-
-
-            <li>
-              <a href="#">
-                <img src="./images/brand5.png" alt="">
-                <p>361</p>
-              </a>
-            </li>
-
-
-            <li>
-              <a href="#">
-                <img src="./images/brand6.png" alt="">
-                <p>匡威</p>
-              </a>
-            </li>
-
-
-            <li>
-              <a href="#">
-                <img src="./images/brand7.png" alt="">
-                <p>BEAU</p>
-              </a>
-            </li>
           </ul>
         </div>
       </div>
@@ -162,7 +116,27 @@
     </ul>
   </div>
 </div>
+<!--左侧模版-->
+<script type="text/html" id="leftTpl">
+{{each  rows v i }}
+  <li><a href="#" class="{{i === 0 ? 'current' : 0 }}" data-id="{{v.id}}">{{v.categoryName}}</a></li>
+{{/each}}
+</script>
+<!--右侧模版-->
+<script type="text/html" id="rightTpl">
+  {{if rows.length === 0}}
+    <p>没有更多分类信息了</p>
+  {{/if}}
 
+  {{each rows v i}}
+  <li>
+    <a href="#">
+      <img src="{{v.brandLogo}}" alt="">
+      <p>{{v.brandName}}</p>
+    </a>
+  </li>
+  {{/each}}
+</script>
 
 
 
@@ -170,6 +144,8 @@
 <script src="./lib/mui/js/mui.js"></script>
 <script src="./lib/zepto/zepto.min.js"></script>
 <script src="./js/common.js"></script>
+<script type="text/javascript" src="./js/category.js"></script>
+<script type="text/javascript" src="./lib/artTemplate/template-web.js"></script>
 
 
 </body>
