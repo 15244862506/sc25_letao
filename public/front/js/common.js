@@ -25,7 +25,7 @@ function getSearch(k) {
   var obj = {};
   arr.forEach(function (v ,i) {
     var key = v.split("=")[0];
-    var value = v.split("+")[0];
+    var value = v.split("=")[1];
     //通过[]语法会解析变量
     obj[key] = value;
   })
