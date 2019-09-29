@@ -1,115 +1,113 @@
+/**
+ * Created by Jepson on 2018/8/12.
+ */
+$(function() {
 
 
-$(function () {
-  //1.解析获取地址栏传递过来的搜索关键字 设置给input、
-    var key =getSearch("key");
-    console.log(key);
-    //设置给 input
-  $('.search_input').val(key);
-  // 一进入页面，就搜索关键字发送请求，进行页面渲染
+  // 功能1: 解析地址栏参数, 将参数赋值到input框中
+  var key = getSearch( "key" );
+  $('.search_input').val( key );
   render();
 
-function render(){
-  //准备请求数据 渲染时 显示加载中的效果
-  $('.lt_product').html('<div class="loading"></div>')
 
-var params ={};
-//三个必传的参数
-  params.proName=$('.search_input').val();//搜索关键字
-  params.page =1;
-  params.pageSize=100;
-  // 两个可选的参数
-  // 通过判断有没有高亮的a标签, 来决定需不需要传递排序的参数
+  // 获取 input框的值, 请求数据, 进行渲染
+  function render() {
+    $('.lt_product').html('<div class="loading"></div>');
+
+
+    // 三个必传的参数
+    var params = {};
+    params.proName = $('.search_input').val();  // 搜索关键字
+    params.page = 1;
+    params.pageSize = 100;
+
+    // 两个可选的参数
+    // 通过判断有没有高亮的a标签, 来决定需不需要传递排序的参数
     var $current = $('.lt_sort a.current');
-    if ($current.length >0){
-      //有高亮说明a 说明需要进行排序
-      //获取传给后台的值
+    if ( $current.length > 0 ) {
+      // 当前有 a 标签有current类, 需要进行排序
+      console.log( "需要进行排序" );
+      // 按照什么进行排序
       var sortName = $current.data("type");
-      // console.log(sortName);
-      // 获取传给后台的值 根据箭头的方向
+      // 升序还是降序, 可以通过判断箭头的方向决定, （1升序，2降序）
       var sortValue = $current.find("i").hasClass("fa-angle-down") ? 2 : 1;
 
-      // 添加到params中
-    params[sortName] = sortValue;
-
+      // 如果需要排序, 需要将参数添加在params中
+      params[ sortName ] = sortValue;
     }
 
-setTimeout(function () {
-  $.ajax({
-    type:'get',
-    url:"/product/queryProduct",
-    data:params,
-    dataType:"json",
-    success:function (info) {
-      console.log(info);
-      // 通过模板引擎进行渲染
-      var htmlStr = template('productTpl' ,info);
-      $('.lt_product').html( htmlStr )
+
+    setTimeout(function() {
+      // 发送 ajax 请求, 获取搜索到的商品, 通过模板引擎渲染
+      $.ajax({
+        type: "get",
+        url: "/product/queryProduct",
+        data: params,
+        dataType: "json",
+        success: function( info ) {
+          console.log( info )
+          var htmlStr = template( "tpl" , info );
+          $('.lt_product').html( htmlStr );
+        }
+      })
+    }, 1000);
+  }
+
+
+
+  // 功能2: 点击搜索按钮, 实现搜索功能
+  $('.search_btn').click(function() {
+    // 获取搜索框的值
+    var key = $(".search_input").val();
+
+    // 获取数组
+    var jsonStr = localStorage.getItem("search_list");
+    var arr = JSON.parse( jsonStr );
+
+    // 1. 不能重复
+    var index = arr.indexOf( key );
+    if ( index > -1 ) {
+      // 已经存在, 删除该项
+      arr.splice( index, 1 );
     }
-  })
-},1000)
-
-}
-
-
-// 2.功能：点击搜索按钮实现搜索功能
-  $('.search_btn').click(function () {
-
-    //需要将搜索关键字  追加存储到本地存储中
-    var key = $('.search_input').val();
-    if (key.trim()===""){
-      mui.toast('请输入搜索关键字');
-      return;
-    }
-    // 搜索
-    render();
-    
-    //获取数组 ，需要将jsonStr =》 arr
-    var history = localStorage.getItem("search_list") || '[]';
-    var arr = JSON.parse( history );
-
-    // 1.删除重复的项
-      var index = arr.indexOf( key );
-      if (index != -1){
-        //删除重复的项
-        arr.splice(index ,1)
-      }
-    //     2.长度限制在10
-    if (arr.length >=10){
-      //删除最后一项
+    // 2. 不能超过10个
+    if ( arr.length >= 10 ) {
       arr.pop();
     }
 
-
-    // 将关键字追加到arr前面
+    // 将搜索关键字添加到 arr 最前面
     arr.unshift( key );
-    //转换成json 存储到本地存储中
-    localStorage.setItem("search_list",JSON.stringify( arr ));
+
+    // 转存到本地存储中
+    localStorage.setItem( "search_list", JSON.stringify( arr ) );
+
+    render();
+  });
 
 
+
+  // 功能3: 点击价格或者库存, 切换current, 实现排序
+  // 1. 绑定点击事件, 通过 a[data-type] 绑定
+  // 2. 切换 current类
+  //    (1)点击的a标签没有current类, 直接加上 current类, 并且移除其他 a 的current类
+  //    (2)点击的a标签有current类, 切换箭头方向
+  // 3. 调用 render 重新渲染
+
+  $('.lt_sort a[data-type]').click(function() {
+
+    if ( $(this).hasClass("current") ) {
+      // 有类, 切换箭头方向
+      $(this).find("i").toggleClass("fa-angle-down").toggleClass("fa-angle-up");
+    }
+    else {
+      // 当前a没有类, 给自己加上, 让其他的移除
+      $(this).addClass("current").siblings().removeClass("current");
+    }
+
+    // 重新渲染
+    render();
   })
 
 
-  // 功能3排序
 
-  // 通过属性选择器给价格和库存添加点击事件进行排序
-// （1）如果自己有currnet 点击切换箭头的方向就行了
-// （2)如果没有给自己加上current类
-//  并且移除兄弟元素的current类
-$('.lt_sort a[data-type]').click(function () {
-  
-  if ($(this).hasClass("current")){
-    //有currnent 切换箭头就可以了
-    $(this).find("i").toggleClass("fa-angle-up").toggleClass("fa-angle-down");
-  }else {
-    //没有current类 自己加上 在移除兄弟元素的
-     $(this).addClass('current').siblings().removeClass("current");
-  }
-  // 重新渲染页面 因为所有的参数都在render处理好了
-  render();
-})
-
-
-
-
-})
+});
