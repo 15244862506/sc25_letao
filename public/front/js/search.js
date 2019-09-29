@@ -52,7 +52,10 @@ $('.lt_history').on("click",'.btn-empty',function () {
       //重新渲染
        render();
     }else {
-          alert("666")
+      if (key.trim()===""){
+        mui.toast('请输入搜索关键字');
+        return;
+      }
     }
 
   })
@@ -104,8 +107,8 @@ $('.search_btn').click(function () {
   //获取搜索关键字
   var key =  $('.search_input').val();
   //判断是否非空
-  if (key === ""){
-    alert("请输入搜索关键字");
+  if (key.trim()===""){
+    mui.toast('请输入搜索关键字');
     return;
   }
   //获取数组

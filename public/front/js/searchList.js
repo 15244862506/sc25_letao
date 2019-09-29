@@ -10,16 +10,35 @@ $(function () {
   render();
 
 function render(){
+  //准备请求数据 渲染时 显示加载中的效果
+  $('.lt_product').html('<div class="loading"></div>')
 
+var params ={};
+//三个必传的参数
+  params.proName=$('.search_input').val();//搜索关键字
+  params.page =1;
+  params.pageSize=100;
+  // 两个可选的参数
+  // 通过判断有没有高亮的a标签, 来决定需不需要传递排序的参数
+    var $current = $('.lt_sort a.current');
+    if ($current.length >0){
+      //有高亮说明a 说明需要进行排序
+      //获取传给后台的值
+      var sortName = $current.data("type");
+      // console.log(sortName);
+      // 获取传给后台的值 根据箭头的方向
+      var sortValue = $current.find("i").hasClass("fa-angle-down") ? 2 : 1;
 
+      // 添加到params中
+    params[sortName] = sortValue;
+
+    }
+
+setTimeout(function () {
   $.ajax({
     type:'get',
     url:"/product/queryProduct",
-    data:{
-      proName:$('.search_input').val(),
-      page:1,
-      pageSize:100
-    },
+    data:params,
     dataType:"json",
     success:function (info) {
       console.log(info);
@@ -28,6 +47,7 @@ function render(){
       $('.lt_product').html( htmlStr )
     }
   })
+},1000)
 
 }
 
@@ -38,7 +58,8 @@ function render(){
     //需要将搜索关键字  追加存储到本地存储中
     var key = $('.search_input').val();
     if (key.trim()===""){
-      alert("请输入搜索关键字")
+      mui.toast('请输入搜索关键字');
+      return;
     }
     // 搜索
     render();
@@ -69,10 +90,24 @@ function render(){
   })
 
 
+  // 功能3排序
 
-
-
-
+  // 通过属性选择器给价格和库存添加点击事件进行排序
+// （1）如果自己有currnet 点击切换箭头的方向就行了
+// （2)如果没有给自己加上current类
+//  并且移除兄弟元素的current类
+$('.lt_sort a[data-type]').click(function () {
+  
+  if ($(this).hasClass("current")){
+    //有currnent 切换箭头就可以了
+    $(this).find("i").toggleClass("fa-angle-up").toggleClass("fa-angle-down");
+  }else {
+    //没有current类 自己加上 在移除兄弟元素的
+     $(this).addClass('current').siblings().removeClass("current");
+  }
+  // 重新渲染页面 因为所有的参数都在render处理好了
+  render();
+})
 
 
 
