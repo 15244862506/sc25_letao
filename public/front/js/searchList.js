@@ -12,7 +12,6 @@ $(function() {
   $('.search_input').val( key );
   render();
 
-
   mui.init({
     //配置pullRefresh
     pullRefresh : {
@@ -75,11 +74,6 @@ $(function() {
     }
   });
 
-
-
-
-
-
   // 获取 input框的值, 请求数据, 进行渲染
   // 整个页面的核心方法 render
   // 在 render 方法中, 处理了所有的参数, 发送请求, 获取数据
@@ -130,6 +124,12 @@ $(function() {
     var jsonStr = localStorage.getItem("search_list");
     var arr = JSON.parse( jsonStr );
 
+
+       //执行下拉刷新即可，在下拉刷新回调函数中 会就行页面渲染
+    // 调用pulldoownLoading
+    mui('.mui-scroll-wrapper').pullRefresh().pulldownLoading();
+
+
     // 1. 不能重复
     var index = arr.indexOf( key );
     if ( index > -1 ) {
@@ -151,7 +151,6 @@ $(function() {
   });
 
 
-
   // 功能3: 点击价格或者库存, 切换current, 实现排序
   // 1. 绑定点击事件, 通过 a[data-type] 绑定
   // 2. 切换 current类
@@ -159,7 +158,7 @@ $(function() {
   //    (2)点击的a标签有current类, 切换箭头方向
   // 3. 调用 render 重新渲染
 
-  $('.lt_sort a[data-type]').click(function() {
+  $('.lt_sort a[data-type]').on('tap',function() {
 
     if ( $(this).hasClass("current") ) {
       // 有类, 切换箭头方向
@@ -171,9 +170,17 @@ $(function() {
     }
 
     // 重新渲染
-    render();
+    // render();
+    mui('.mui-scroll-wrapper').pullRefresh().pulldownLoading();
   })
 
+
+
+// 功能4 点击商品实现页面跳转 注册点击事件 通过事件委托 注册tap事件
+$('.lt_product').on("tap" ,'a',function () {
+  var id = $(this).data('id');
+  location.href = "product.html?product="+id;
+})
 
 
 });
